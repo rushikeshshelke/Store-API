@@ -12,7 +12,10 @@ from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL","sqlite:///data.db")
+plugin = os.environ.get("DATABASE_URL","sqlite:///data.db")
+if plugin.startswith('postgres://'):
+    plugin = plugin.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = plugin
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # disables flask sqlalchemy tracker not underlying sqlalchemy tracker
 app.secret_key = CommonConfigs().getEnvData()
 api = Api(app)
