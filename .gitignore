@@ -1,0 +1,9 @@
+# Local python packages
+.python_packages/
+.vscode/*
+logs/*
+
+data.db
+
+# Byte compiled
+__pycache__/
