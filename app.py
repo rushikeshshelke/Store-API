@@ -28,4 +28,6 @@ api.add_resource(Store,'/store/<string:storeName>')
 api.add_resource(StoreList,'/stores')
 
 if __name__ == "__main__":
+    from commonLibs.database import db
+    db.init_app(app)
     app.run(port=5000,debug=True)
