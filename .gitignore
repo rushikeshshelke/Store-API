@@ -2,6 +2,8 @@
 .python_packages/
 .vscode/*
 logs/*
+.DS_Store
+*.pyc
 
 data.db
 
