@@ -13,7 +13,11 @@ class StoreModel(db.Model):
         self.name = name
     
     def json(self):
-        return {'name':self.name,'items':[item.json() for item in self.items.all()]}
+        return {
+                'id': self.id,
+                'name':self.name,
+                'items':[item.json() for item in self.items.all()]
+            }
 
     @classmethod
     def select(cls,storeName):
@@ -26,3 +30,7 @@ class StoreModel(db.Model):
     def deleteFromDB(self):
         db.session.delete(self)
         db.session.commit()
+    
+    @classmethod
+    def findAll(cls):
+        return cls.query.all()
