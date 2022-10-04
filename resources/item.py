@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 from commonLibs.globalVariables import GlobalVariables
 from models.item import ItemModel
 
@@ -23,20 +23,20 @@ class Item(Resource):
     def get(self,itemName):
         try:
             item = ItemModel.select(itemName)
-        except:
-            GlobalVariables.LOGGER.info("An error occured while fetching the item.")
+        except Exception as e:
+            GlobalVariables.LOGGER.info("An error occured while fetching the item : {}".format(e))
             return {"message":"An error occured while fetching the item."}, 500
         if item:
             return item.json(), 200
         GlobalVariables.LOGGER.info("Item not found.")
         return {'message':'Item not found.'}, 404
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     def post(self,itemName):
         try:
             item = ItemModel.select(itemName)
-        except:
-            GlobalVariables.LOGGER.info("An error occured while fetching the item.")
+        except Exception as e:
+            GlobalVariables.LOGGER.info("An error occured while fetching the item : {}".format(e))
             return {"message":"An error occured while fetching the item."}, 500
         if item:
             GlobalVariables.LOGGER.info("Item '{}' already exists".format(itemName))
@@ -51,8 +51,12 @@ class Item(Resource):
             return {"message":"An error occured while inserting the item."}, 500
         return item.json(), 201
         
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(self,itemName):
+        claim = get_jwt()
+        if not claim['is_admin']:
+            return {"message":"Admin privilege required"}, 401
+
         try:
             item = ItemModel.select(itemName)
         except:
@@ -61,22 +65,22 @@ class Item(Resource):
         if item:
             try:
                 item.deleteFromDB()
-            except:
-                GlobalVariables.LOGGER.info("An error occured while deleting the item.")
+            except Exception as e:
+                GlobalVariables.LOGGER.info("An error occured while deleting the item : {}".format(e))
                 return {"message":"An error occured while deleting the item."}, 500
             GlobalVariables.LOGGER.info("Item '{}' deleted successfully".format(itemName))
             return {'message':"Item '{}' deleted successfully".format(itemName)}, 200
         GlobalVariables.LOGGER.info("Item not found.")
         return {'message':'Item not found.'}, 404
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     def put(self,itemName):
         reqData = self.parseReqBody()
         GlobalVariables.LOGGER.info("PUT method request body : {}".format(reqData))
         try:
             item = ItemModel.select(itemName)
-        except:
-            GlobalVariables.LOGGER.info("An error occured while fetching the item.")
+        except Exception as e:
+            GlobalVariables.LOGGER.info("An error occured while fetching the item : {}".format(e))
             return {"message":"An error occured while fetching the item."}, 500
         if item:
             item.price = reqData['price']
@@ -84,8 +88,8 @@ class Item(Resource):
             item = ItemModel(itemName,reqData['price'],reqData['store_id'])
         try:
             item.saveToDB()
-        except:
-            GlobalVariables.LOGGER.info("An error occured while inserting/updating the item.")
+        except Exception as e:
+            GlobalVariables.LOGGER.info("An error occured while inserting/updating the item : {}".format(e))
             return {"message":"An error occured while inserting/updating the item."}, 500
         return item.json(), 201
 
@@ -93,7 +97,7 @@ class Item(Resource):
 class ItemList(Resource):
     @jwt_required()
     def get(self):
-        rows = ItemModel.query.all()
+        rows = ItemModel.findAll()
         responsePayload = []
         if rows:
             for row in rows:

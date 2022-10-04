@@ -16,3 +16,7 @@ class GlobalVariables:
     SELECT_ITEMS = "SELECT * FROM items"
     DELETE_ITEM = "DELETE FROM items WHERE name=?"
     UPDATE_IETM = "UPDATE items SET price=? WHERE name=?"
+
+    ADMIN_USER = 1
+
+    BLACK_LIST = set()

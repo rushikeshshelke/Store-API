@@ -1,11 +1,10 @@
 from flask_restful import Resource, reqparse
 from models.store import StoreModel
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 from commonLibs.globalVariables import GlobalVariables
 
 class Store(Resource):
 
-    @jwt_required()
     def get(self,storeName):
         store = StoreModel.select(storeName)
         if store:
@@ -14,7 +13,7 @@ class Store(Resource):
         GlobalVariables.LOGGER.info("Store not found")
         return {"message":"Store not found"}, 404
     
-    @jwt_required()
+    @jwt_required(fresh=True)
     def post(self,storeName):
         store = StoreModel.select(storeName)
         if store:
@@ -23,20 +22,23 @@ class Store(Resource):
         store = StoreModel(storeName)
         try:
             store.saveToDB()
-        except:
-            GlobalVariables.LOGGER.info("An error occured while creating the store.")
+        except Exception as e:
+            GlobalVariables.LOGGER.info("An error occured while creating the store : {}".format(e))
             return {"message":"An error occured while creating the store."}, 500
         return store.json(), 201
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(self,storeName):
+        claim = get_jwt()
+        if not claim['is_admin']:
+            return {"message":"Admin privilege required"}, 401
         store = StoreModel.select(storeName)
         if store:
             try:
                 store.deleteFromDB()
-            except:
-                GlobalVariables.LOGGER.info("An error occured while deleting the store.")
-                return {"message":"An error occured while deleting the store."}, 500
+            except Exception as e:
+                GlobalVariables.LOGGER.info("An error occured while deleting the store : {}".format(e))
+                return {"message":"An error occured while deleting the store ."}, 500
             GlobalVariables.LOGGER.info("Store '{}' has been deleted successfully.".format(storeName))
             return {"message":"Store '{}' has been deleted successfully.".format(storeName)}, 200
         GlobalVariables.LOGGER.info("Store '{}' not found.".format(storeName))
@@ -44,8 +46,9 @@ class Store(Resource):
 
 
 class StoreList(Resource):
+    
     def get(self):
-        rows = StoreModel.query.all()
+        rows = StoreModel.findAll()
         responsePayload = []
         if rows:
             for row in rows:
