@@ -20,8 +20,8 @@ app.config['PROPAGATE_EXCEPTIONS'] = True #Flask jwt will return proper error re
 app.config['JWT_BLOCKLIST_TOKEN_CHECKS'] = ["access","refresh"]
 secretKey, jwtAlgorithm = CommonConfigs().getEnvData()
 app.secret_key = secretKey
-app.config["JWT_SECRET_KEY"] = secretKey
-app.config["JWT_ALGORITHM"] = jwtAlgorithm
+app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
+app.config["JWT_ALGORITHM"] = os.environ.get("JWT_ALGORITHM")
 api = Api(app)
 
 # @app.before_first_request
