@@ -18,7 +18,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = plugin
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # disables flask sqlalchemy tracker not underlying sqlalchemy tracker
 app.config['PROPAGATE_EXCEPTIONS'] = True #Flask jwt will return proper error response
 app.config['JWT_BLOCKLIST_TOKEN_CHECKS'] = ["access","refresh"]
-app.secret_key = CommonConfigs().getEnvData()
+secretKey, jwtAlgorithm = CommonConfigs().getEnvData()
+app.secret_key = secretKey
+app.config["JWT_SECRET_KEY"] = secretKey
+app.config["JWT_ALGORITHM"] = jwtAlgorithm
 api = Api(app)
 
 # @app.before_first_request
