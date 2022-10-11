@@ -17,7 +17,8 @@ class CommonConfigs:
     def getEnvData(self):
         load_dotenv()
         secretKey = os.environ.get('SECRET_KEY')
-        return secretKey
+        jwtAlgorithm = os.environ.get('JWT_ALGORITHM')
+        return secretKey, jwtAlgorithm
 
     def parseReqBody(self):
         reqParser = reqparse.RequestParser()
