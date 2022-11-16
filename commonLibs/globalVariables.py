@@ -3,6 +3,8 @@ class GlobalVariables:
     APP_CONFIG_PATH = "./configs"
     APP_LOGS_PATH = "./logs"
 
+    APP_DOCS_PATH = "/static"
+
     LOGGER = None
 
     CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username text, password text)"

@@ -9,6 +9,7 @@ from resources.userRegister import UserRegister, User, UserLogin, UserLogout, To
 from commonLibs.commonConfigs import CommonConfigs
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 plugin = os.environ.get("DATABASE_URL","sqlite:///data.db")
@@ -22,6 +23,7 @@ secretKey, jwtAlgorithm = CommonConfigs().getEnvData()
 app.secret_key = secretKey
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
 app.config["JWT_ALGORITHM"] = os.environ.get("JWT_ALGORITHM")
+
 api = Api(app)
 
 # @app.before_first_request
@@ -78,6 +80,17 @@ def revokedTokenCallback(jwt_headers,jwt_payload):
 InitialiseLogging().setupLogging()
 GlobalVariables.LOGGER.info("App Started...")
 GlobalVariables.LOGGER.info("Logging initialised...")
+
+SWAGGER_URL = '/api/docs'
+API_URL = "{}/docs.yml".format(GlobalVariables.APP_DOCS_PATH)
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Store API"
+    }
+)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 
 api.add_resource(Item,'/item/<string:itemName>')
 api.add_resource(ItemList,'/items')
