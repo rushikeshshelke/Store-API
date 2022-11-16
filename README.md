@@ -43,3 +43,6 @@ Following are the resources offered by Store-API
     7. Resource - TokenRefresh
         - post /refresh : Creates access_token from refresh_token
 ```
+```
+API DOC : https://store-item-rest-api-v1.herokuapp.com/api/docs/
+```
