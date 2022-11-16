@@ -105,4 +105,4 @@ class ItemList(Resource):
                 GlobalVariables.LOGGER.info("items : {}".format(responsePayload))
             return {'items':responsePayload}, 200
         GlobalVariables.LOGGER.info("Items not found")
-        return {'message':'Items not found'}, 400
+        return {'message':'Items not found'}, 404

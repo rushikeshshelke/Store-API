@@ -38,7 +38,7 @@ class Store(Resource):
                 store.deleteFromDB()
             except Exception as e:
                 GlobalVariables.LOGGER.info("An error occured while deleting the store : {}".format(e))
-                return {"message":"An error occured while deleting the store ."}, 500
+                return {"message":"An error occured while deleting the store."}, 500
             GlobalVariables.LOGGER.info("Store '{}' has been deleted successfully.".format(storeName))
             return {"message":"Store '{}' has been deleted successfully.".format(storeName)}, 200
         GlobalVariables.LOGGER.info("Store '{}' not found.".format(storeName))
@@ -56,4 +56,4 @@ class StoreList(Resource):
                 GlobalVariables.LOGGER.info("stores : {}".format(responsePayload))
             return {'stores':responsePayload}, 200
         GlobalVariables.LOGGER.info("Stores not found")
-        return {'message':'Stores not found'}, 400
+        return {'message':'Stores not found'}, 404

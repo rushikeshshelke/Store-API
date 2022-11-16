@@ -1,0 +1,359 @@
+openapi: 3.0.3
+info:
+  title: Store API - OpenAPI 3.0
+  description: |-
+    This is implemented using Flask-Restful, and it is REST API for store.
+  version: 1.0.11
+
+tags:
+  - name: Store
+    description: Everything about store
+  - name: Item
+    description: Everything about item
+  - name: User
+    description: Everything about user
+
+paths:
+  /stores:
+    get:
+      tags:
+        - Store
+      summary: Get all available store details
+      description: Get all available store details
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/StoresResponse'
+        '404':
+          description: Stores not found
+  /store/{storeName}:
+    get:
+      tags:
+        - Store
+      summary: Get store details by store name
+      description: Get store details by store name
+      parameters:
+        - name: storeName
+          in: path
+          description: name of store
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/StoresResponse'
+        '404':
+          description: Stores not found
+    post:
+      tags:
+        - Store
+      summary: Create a store with store name
+      security: 
+        - bearerAuth: []
+      description: Create a store with store name
+      parameters:
+        - name: storeName
+          in: path
+          description: name of store
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/CreateStore'
+    delete:
+      tags:
+        - Store
+      summary: Delete a store by name
+      security: 
+        - bearerAuth: []
+      description: Delete a store by name
+      parameters:
+        - name: storeName
+          in: path
+          description: name of store
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store store1 has been deleted successfully.
+        '404':
+          description: Store store1 not found.
+        '401':
+          description: Admin privilege required
+        '500':
+          description: An error occured while deleting the store.
+  /items:
+    get:
+      tags:
+        - Item
+      summary: Get all available items
+      security: 
+        - bearerAuth: []
+      description: Get all available items
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ItemResponse'
+        '404':
+          description: Items not found
+  /item/{itemName}:
+    get:
+      tags:
+        - Item
+      summary: Get item details by item name
+      security: 
+        - bearerAuth: []
+      description: Get item details by item name
+      parameters:
+        - name: itemName
+          in: path
+          description: name of item
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ItemResponse'
+        '404':
+          description: Item not found
+        '500':
+          description: An error occured while fetching the item.
+    post:
+      tags:
+        - Item
+      summary: Create a item with item name
+      security: 
+        - bearerAuth: []
+      description: Create a item with item name
+      parameters:
+        - name: itemName
+          in: path
+          description: name of item
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create item request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateItem'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ItemResponse'
+        '400':
+          description: Item table already exists.
+        '500':
+          description: An error occured while inserting the item.
+    put:
+      tags:
+        - Item
+      summary: Create/Update a item with item name
+      security: 
+        - bearerAuth: []
+      description: Create/Update a item with item name
+      parameters:
+        - name: itemName
+          in: path
+          description: name of item
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create/Update item request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateItem'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/ItemResponse'
+        '500':
+          description: An error occured while inserting/updating the item.
+    delete:
+      tags:
+        - Item
+      summary: Delete a item by name
+      security: 
+        - bearerAuth: []
+      description: Delete a item by name
+      parameters:
+        - name: itemName
+          in: path
+          description: name of item
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item table has been deleted successfully.
+        '404':
+          description: Item table not found.
+        '401':
+          description: Admin privilege required
+        '500':
+          description: An error occured while deleting the item.
+  /register:
+    post:
+      tags:
+        - User
+      summary: Register user with username and password
+      description: Register user with username and password
+      requestBody:
+        description: Register user request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUser'
+      responses:
+        '201':
+          description: User abc created successfully.
+        '409':
+          description: User abc already exists.
+  /auth:
+    post:
+      tags:
+        - User
+      summary: Authenticate user by username and password
+      description: Authenticate user by username and password
+      requestBody:
+        description: Authenticate user request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUser'
+      responses:
+        '201':
+          description: User authenticated successfully.
+        '401':
+          description: Invalid credentials
+      
+
+components:
+  schemas:
+    StoresResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: store1
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: table
+            price:
+              type: number
+              example: 9.8
+            store_id:
+              type: integer
+              example: 1
+    CreateStore:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: store1
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: table
+            price:
+              type: number
+              example: 9.8
+            store_id:
+              type: integer
+              example: 1
+    ItemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: table
+        price:
+          type: number
+          example: 9.8
+        store_id:
+          type: integer
+          example: 1
+    CreateItem:
+      type: object
+      properties:
+        price: 
+          type: number
+          example: 9.8
+        store_id:
+          type: integer
+          example: 1
+    RegisterUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: abc
+        password:
+          type: string
+          example: 12345678
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT Authorization header using the Bearer scheme. Example: Authorization: Bearer {token}"
